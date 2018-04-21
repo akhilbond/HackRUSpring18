@@ -6,15 +6,38 @@
 # between Leap Motion and you, your company or other organization.             #
 ################################################################################
 
-import sys
+
+
 import os, sys, inspect
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
 arch_dir = '../lib/x64' if sys.maxsize > 2**32 else '../lib/x86'
 sys.path.insert(0, os.path.abspath(os.path.join(src_dir, arch_dir)))
 
+
 import Leap
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
+
+from libsoundtouch import soundtouch_device
+from libsoundtouch.utils import Source, Type
+
+device = soundtouch_device('192.168.1.157')
+device.power_on()
+device.play_media(Source.INTERNET_RADIO, '4712')
+
+# count = 0
+
+# def up_count():
+#     x = count
+#     global count
+#     count= x+1
+#     return(count)
+
+# def down_count():
+#     x = count
+#     global count
+#     count= x-1
+#     return(count)
 
 class SampleListener(Leap.Listener):
     def on_init(self, controller):
@@ -41,6 +64,7 @@ class SampleListener(Leap.Listener):
         frame = controller.frame()
 
         print "gestures: %d" % (len(frame.gestures()))
+        # print count
 
         if not frame.hands.is_empty:
             # Get the first hand
@@ -79,8 +103,12 @@ class SampleListener(Leap.Listener):
                     # Determine clock direction using the angle between the pointable and the circle normal
                     if circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/4:
                         clockwiseness = "clockwise"
+                        # up_count()
+                        device.set_volume(50)
                     else:
                         clockwiseness = "counterclockwise"
+                        # down_count()
+                        device.set_volume(0)
 
                     # Calculate the angle swept since the last frame
                     swept_angle = 0
