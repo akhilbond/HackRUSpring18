@@ -8,6 +8,11 @@
 
 import time
 
+import sys
+sys.path.append('../facerecog/')
+# import test.py
+from tmp import startVideo
+
 import os, sys, inspect
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
 arch_dir = '../lib/x64' if sys.maxsize > 2**32 else '../lib/x86'
@@ -231,6 +236,8 @@ class SampleListener(Leap.Listener):
 
 def main():
     # Create a sample listener and controller
+    name, playlist = (startVideo())
+    print "USER: {}, PLAYLIST: {}".format(name, playlist)
     listener = SampleListener()
     controller = Leap.Controller()
 
