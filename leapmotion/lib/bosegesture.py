@@ -6,7 +6,7 @@
 # between Leap Motion and you, your company or other organization.             #
 ################################################################################
 
-
+import time
 
 import os, sys, inspect
 src_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
@@ -18,31 +18,31 @@ import Leap
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 import random
 
-factor = 30
+factor = 10
 
-# from libsoundtouch import soundtouch_device
-# from libsoundtouch.utils import Source, Type
-#
-# device = soundtouch_device('192.168.1.157')
-# device.power_on()
+from libsoundtouch import soundtouch_device
+from libsoundtouch.utils import Source, Type
+
+device = soundtouch_device('192.168.1.157')
+device.power_on()
 # device.play_media(Source.INTERNET_RADIO, '4712')
 
 
 trigger = 0
 
-count = 0
+# count = 0
 
-def up_count():
-    x = count
-    global count
-    count= x+1
-    return(count)
-
-def down_count():
-    x = count
-    global count
-    count= x-1
-    return(count)
+# def up_count():
+#     x = count
+#     global count
+#     count= x+1
+#     return(count)
+#
+# def down_count():
+#     x = count
+#     global count
+#     count= x-1
+#     return(count)
 
 class SampleListener(Leap.Listener):
     def on_init(self, controller):
@@ -68,12 +68,27 @@ class SampleListener(Leap.Listener):
         # Get the most recent frame and report some basic information
         frame = controller.frame()
 
+        preset = False
+
         print "gestures: %d" % (len(frame.gestures()))
         # print count
 
         if not frame.hands.is_empty:
             # Get the first hand
             hand = frame.hands[0]
+
+
+            pinch = hand.pinch_strength
+            if(hand.grab_strength == 1 and pinch == 1):
+                if(device.status().play_status == "PLAY_STATE"):
+                    device.pause()
+                else:
+                    device.play()
+
+                # Do something
+
+
+
 
             # Check if the hand has any fingers
             fingers = hand.fingers
@@ -102,8 +117,10 @@ class SampleListener(Leap.Listener):
 
             # Gestures
             for gesture in frame.gestures():
+
                 gest_hands = gesture.hands
                 left = gest_hands.leftmost
+
                 if gesture.type == Leap.Gesture.TYPE_CIRCLE:
                     circle = CircleGesture(gesture)
 
@@ -112,7 +129,8 @@ class SampleListener(Leap.Listener):
                         clockwiseness = "clockwise"
                         rand = random.randrange(start=0, stop=factor, step=1)
                         if(rand == 0):
-                            up_count()
+                            # up_count()
+                            device.volume_up()
                         else:
                             continue
                         # up_count()
@@ -122,7 +140,8 @@ class SampleListener(Leap.Listener):
                         clockwiseness = "counterclockwise"
                         rand = random.randrange(start=0, stop=factor, step=1)
                         if(rand == 0):
-                            down_count()
+                            # down_count()
+                            device.volume_down()
                         else:
                             continue
                         # down_count()
@@ -146,18 +165,38 @@ class SampleListener(Leap.Listener):
                     #         swipe.position, swipe.direction, swipe.speed)
 
 
-                    rand = random.randrange(start=0, stop=factor/4, step=1)
-                    if(swipe.direction[0] < -0.8 and rand == 0 and left.is_right):
+                    rand = random.randrange(start=0, stop=factor/7, step=1)
+                    if(swipe.direction[0] < -0.85 and rand == 0 and left.is_right):
                         print("Left")
-                    if(swipe.direction[0] > 0.8 and rand == 0 and left.is_right):
+                        device.previous_track()
+                        device.previous_track()
+                    if(swipe.direction[0] > 0.85 and rand == 0 and left.is_right):
                         print("Right")
-                    if(swipe.direction[0] < -0.8 and rand == 0 and left.is_left):
-                        print("Left")
-                        exit()
-                    if(swipe.direction[0] > 0.8 and rand == 0 and left.is_left):
-                        print("Right")
-                        exit()
+                        device.next_track()
 
+                    if(swipe.direction[0] < -0.85 and rand == 0 and left.is_left):
+
+                        curr = device.status().source
+                        if(curr == "INTERNET_RADIO"):
+                            device.play_media(Source.LOCAL_MUSIC, "album:4", "b8750a46-7b1e-44a1-bae9-9e896b680b2c", Type.ALBUM)
+                        if(curr == "SPOTIFY"):
+                            device.play_media(Source.INTERNET_RADIO, "4712")
+                        if(curr == "LOCAL_MUSIC"):
+                            device.play_media(Source.SPOTIFY, "spotify:track:5J59VOgvclrhLDYUoH5OaW", "dchen319")
+                        if(curr == "INVALID_SOURCE"):
+                            device.play_media(Source.INTERNET_RADIO, "4712")
+
+                    if(swipe.direction[0] > 0.85 and rand == 0 and left.is_left):
+                        # exit()
+                        curr = device.status().source
+                        if(curr == "INTERNET_RADIO"):
+                            device.play_media(Source.SPOTIFY, "spotify:track:5J59VOgvclrhLDYUoH5OaW", "dchen319")
+                        if(curr == "SPOTIFY"):
+                            device.play_media(Source.LOCAL_MUSIC, "album:4", "b8750a46-7b1e-44a1-bae9-9e896b680b2c", Type.ALBUM)
+                        if(curr == "LOCAL_MUSIC"):
+                            device.play_media(Source.INTERNET_RADIO, "4712")
+                        if(curr == "INVALID_SOURCE"):
+                            device.play_media(Source.INTERNET_RADIO, "4712")
 
 
 
