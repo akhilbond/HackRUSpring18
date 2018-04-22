@@ -28,7 +28,6 @@ class Accounts():
         return self.users[name][1]
 
 def startVideo():
-
     # Get a reference to webcam #0 (the default one)
     video_capture = cv2.VideoCapture(0)
     accounts = Accounts()
