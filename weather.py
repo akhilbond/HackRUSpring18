@@ -1,4 +1,5 @@
 import requests
+import yaml
 import json
 
 #import face.face_recog as test
@@ -6,11 +7,10 @@ import json
 #wunderground API
 def get_weather(zip_code):
 
-    #with open('api_keys.yml', 'r') as txt:
-    #    key = yaml.load(txt)
+    with open('creds.yml', 'r') as txt:
+        key = yaml.load(txt)
 
     key = key['wunderground']
-    key = ''
     url = 'http://api.wunderground.com/api/{}/geolookup/forecast/conditions/q/{}.json'.format(key,zip_code)
     r = requests.get(url)
     # f = urllib2.urlopen(url)
