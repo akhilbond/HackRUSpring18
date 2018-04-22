@@ -102,10 +102,18 @@ class SampleListener(Leap.Listener):
 
             pinch = hand.pinch_strength
             if(hand.grab_strength == 1 and pinch == 1):
-                if(device.status().play_status == "PLAY_STATE"):
-                    device.pause()
-                else:
-                    device.play()
+                if(hand.is_right):
+                    if(device.status().play_status == "PLAY_STATE"):
+                        device.pause()
+                    else:
+                        device.play()
+                if(hand.is_left):
+                    weather = get_weather()
+                    if(weather == 'Sunny'):
+                        device.play_media(Source.SPOTIFY, "spotify:user:popsugarsmart:playlist:1e82JSBwrnZF8TODtUcHeR", "dchen319")
+                    else:
+                        device.play_media(Source.SPOTIFY, "spotify:user:popsugarsmart:playlist:1vRYaCYXyJCiRWsLcoR88p", "dchen319")
+
 
             # Check if the hand has any fingers
             fingers = hand.fingers
@@ -326,7 +334,29 @@ def startVideo():
     video_capture.release()
     cv2.destroyAllWindows()
 
+import requests
+import yaml
+import json
 
+#import face.face_recog as test
+
+#wunderground API
+def get_weather():
+
+    with open('creds.yml', 'r') as txt:
+        key = yaml.load(txt)
+
+    key = key['wunderground']
+    url = 'http://api.wunderground.com/api/{}/hourly/forecast/q/NY/NewYork.json'.format(key)
+    r = requests.get(url)
+
+    json_string = r.text
+    parsed_json = json.loads(json_string)
+
+    forecast_prefix = parsed_json['forecast']['txt_forecast']['forecastday'][2]
+    forecast = str(forecast_prefix['fcttext_metric']).split(".")
+    forecast_msg = (forecast)
+    return forecast_msg[0]
 
 
 def main():
