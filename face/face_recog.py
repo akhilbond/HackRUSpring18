@@ -37,11 +37,11 @@ def startVideo():
 
 
     # learn how to recognize faces
-    for file in os.listdir('./faces'):
+    for file in os.listdir('./face/faces'):
         if file.endswith(".jpg"):
             print file
             name = file.split(".")[0]
-            temp_img = face_recognition.load_image_file('./faces/' + str(file))
+            temp_img = face_recognition.load_image_file('./face/faces/' + str(file))
             temp_encoding = face_recognition.face_encodings(temp_img)[0]
             accounts.addUser(name)
             accounts.addImg(name, temp_encoding)
@@ -49,7 +49,7 @@ def startVideo():
             image_encodings.append(temp_encoding)
 
     # add playlists to user
-    with open('playlists.yml', 'r') as file:
+    with open('./face/playlists.yml', 'r') as file:
         playlists = yaml.load(file)
         for user in playlists:
             print user, playlists[user]
