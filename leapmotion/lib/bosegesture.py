@@ -360,6 +360,10 @@ def get_weather():
 
 
 def main():
+
+    import subprocess
+    subprocess.Popen([r"Visualizer.exe"])
+
     # Create a sample listener and controller
     name, playlist = (startVideo())
     print "USER: {}, PLAYLIST: {}".format(name, playlist)
