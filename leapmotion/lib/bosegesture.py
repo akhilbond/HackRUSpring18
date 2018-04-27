@@ -32,7 +32,7 @@ import Leap
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 import random
 
-factor = 10
+factor = 8
 
 from libsoundtouch import soundtouch_device
 from libsoundtouch.utils import Source, Type
@@ -100,8 +100,7 @@ class SampleListener(Leap.Listener):
             hand = frame.hands[0]
 
 
-            pinch = hand.pinch_strength
-            if(hand.grab_strength == 1 and pinch == 1):
+            if(hand.grab_strength == 1 and hand.pinch_strength == 1):
                 if(hand.is_right):
                     if(device.status().play_status == "PLAY_STATE"):
                         device.pause()
@@ -190,20 +189,20 @@ class SampleListener(Leap.Listener):
                     #         swipe.position, swipe.direction, swipe.speed)
 
 
-                    rand = random.randrange(start=0, stop=factor/7, step=1)
-                    if(swipe.direction[0] < -0.85 and rand == 0 and left.is_right):
+                    rand = random.randrange(start=0, stop=factor/6, step=1)
+                    if(swipe.direction[0] < -0.9 and rand == 0 and left.is_right):
                         print("Left")
                         device.previous_track()
                         device.previous_track()
-                    if(swipe.direction[0] > 0.85 and rand == 0 and left.is_right):
+                    if(swipe.direction[0] > 0.9 and rand == 0 and left.is_right):
                         print("Right")
                         device.next_track()
 
-                    if(swipe.direction[0] < -0.85 and rand == 0 and left.is_left):
+                    if(swipe.direction[0] < -0.9 and rand == 0 and left.is_left):
 
                         curr = device.status().source
                         if(curr == "INTERNET_RADIO"):
-                            device.play_media(Source.LOCAL_MUSIC, "album:4", "b8750a46-7b1e-44a1-bae9-9e896b680b2c", Type.ALBUM)
+                            device.play_media(Source.LOCAL_MUSIC, "album:5", "b8750a46-7b1e-44a1-bae9-9e896b680b2c", Type.ALBUM)
                         if(curr == "SPOTIFY"):
                             device.play_media(Source.INTERNET_RADIO, "4712")
                         if(curr == "LOCAL_MUSIC"):
@@ -211,13 +210,13 @@ class SampleListener(Leap.Listener):
                         if(curr == "INVALID_SOURCE"):
                             device.play_media(Source.INTERNET_RADIO, "4712")
 
-                    if(swipe.direction[0] > 0.85 and rand == 0 and left.is_left):
+                    if(swipe.direction[0] > 0.9 and rand == 0 and left.is_left):
                         # exit()
                         curr = device.status().source
                         if(curr == "INTERNET_RADIO"):
                             device.play_media(Source.SPOTIFY, play, "dchen319")
                         if(curr == "SPOTIFY"):
-                            device.play_media(Source.LOCAL_MUSIC, "album:4", "b8750a46-7b1e-44a1-bae9-9e896b680b2c", Type.ALBUM)
+                            device.play_media(Source.LOCAL_MUSIC, "album:5", "b8750a46-7b1e-44a1-bae9-9e896b680b2c", Type.ALBUM)
                         if(curr == "LOCAL_MUSIC"):
                             device.play_media(Source.INTERNET_RADIO, "4712")
                         if(curr == "INVALID_SOURCE"):
